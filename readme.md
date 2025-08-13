@@ -383,11 +383,11 @@ func main() {
 ## 📚 API 说明
 
 ### 初始化与配置
-| 方法 | 说明                      |
-|------|-------------------------|
-| `InitDefaultMsgStat(srvName string)` | 初始化默认统计器                |
-| `NewMsgStat(svrName string, additionMsgReport additionMsgReportFunc) *MsgStat` | 创建自定义统计器并指定额外统计输出回调     |
-| `SetAdditionMsgReport(reportFunc additionMsgReportFunc)` | 设置额外统计回调函数,如上报promethus |
+| 方法 | 说明                       |
+|------|--------------------------|
+| `InitDefaultMsgStat(srvName string)` | 初始化默认统计器                 |
+| `NewMsgStat(svrName string, additionMsgReport additionMsgReportFunc) *MsgStat` | 创建自定义统计器并指定额外统计输出回调      |
+| `SetAdditionMsgReport(reportFunc additionMsgReportFunc)` | 设置额外统计回调函数,如上报prometheus |
 
 ---
 
