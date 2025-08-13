@@ -295,7 +295,7 @@ fastlog.WriteBySkipCall(logger.LevelInfo, 2, "custom log with correct caller inf
 
 ### 5. 账单日志 API
 
-`fastlog` 内置了**账单日志专用通道**，支持为不同账单类型独立记录日志文件，并支持回调事件。
+`fastlog` 内置了**账单日志专用通道**，支持为不同账单类型独立记录日志文件，并支持回调事件。账单日志可用来保存需要独立区分的重要日志，如三方回调日志，定时作业执行等。
 
 | 方法 | 说明 |
 |------|------|
@@ -318,10 +318,10 @@ fastlog.WriteBySkipCall(logger.LevelInfo, 2, "custom log with correct caller inf
 ```go
 // 示例
 fastlog.OnBill(func(billName string) {
-    fmt.Println("账单日志写入:", billName)
+    fmt.Println("%s日志写入\n", billName)
 })
 
-fastlog.Bill("order_2025", "订单 %d 支付成功", 12345)
+fastlog.Bill("order_success", "订单 %d 支付成功", 12345)
 ```
 
 # 📊 MsgStat 内置消息统计日志工具
