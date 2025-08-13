@@ -105,7 +105,7 @@ func TestInitDefaultLogger(t *testing.T) {
 	fastlog.Fatalf("hello fatalf! my name is:%s", "fastlog")
 	fastlog.PrintFatal("hello PrintFatal", "my name is fastlog")
 
-	OnExit()
+	fastlog.OnExit()
 }
 ````
 ## 输出内容
