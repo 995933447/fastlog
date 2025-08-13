@@ -157,10 +157,9 @@ PASS
 ### 1. 导入依赖
 ```go
 import (
-"testing"
-
-"github.com/995933447/fastlog"
-"github.com/995933447/logger"
+    "testing"
+    "github.com/995933447/fastlog"
+    "github.com/995933447/logger"
 )
 ```
 
@@ -169,22 +168,22 @@ import (
 
 ```go
 err := fastlog.InitDefaultCfgLoader("./test/log.toml", &logger.LogConf{
-File: logger.FileLogConf{
-MaxFileSizeBytes:            10000000000,    // 单个日志文件最大字节数（10G）
-LogInfoBeforeFileSizeBytes:  -1,            // 日志文件达到多大前输出Info 级别日志（-1 表示不限制）
-LogDebugBeforeFileSizeBytes: -1,            // 日志文件达到多大前输出Info 级别日志（-1 表示不限制）
-DebugMsgMaxLen:              1024,          // Debug 日志最大消息长度（超过会截断）,0表示不限制
-InfoMsgMaxLen:               1024,          // Info 日志最大消息长度（超过会截断）,0表示不限制
-MaxRemainFileNum:            2,             // 最多保留的日志文件个数
-Level:                       "DBG",         // 日志级别（DBG/INFO/IMP/WARN/ERR/PANIC/FATAL）
-DefaultLogDir:               "/var/work/logs/fastlog/log",  // 普通日志输出路径
-BillLogDir:                  "/var/work/logs/fastlog/bill", // 特殊重要类日志输出路径 
-StatLogDir:                  "/var/work/logs/fastlog/stat", // 统计类日志输出路径
-},
-AlertLevel: "WARN", // 告警级别
+    File: logger.FileLogConf{
+    MaxFileSizeBytes:            10000000000,    // 单个日志文件最大字节数（10G）
+    LogInfoBeforeFileSizeBytes:  -1,            // 日志文件达到多大前输出Info 级别日志（-1 表示不限制）
+    LogDebugBeforeFileSizeBytes: -1,            // 日志文件达到多大前输出Info 级别日志（-1 表示不限制）
+    DebugMsgMaxLen:              1024,          // Debug 日志最大消息长度（超过会截断）,0表示不限制
+    InfoMsgMaxLen:               1024,          // Info 日志最大消息长度（超过会截断）,0表示不限制
+    MaxRemainFileNum:            2,             // 最多保留的日志文件个数
+    Level:                       "DBG",         // 日志级别（DBG/INFO/IMP/WARN/ERR/PANIC/FATAL）
+    DefaultLogDir:               "/var/work/logs/fastlog/log",  // 普通日志输出路径
+    BillLogDir:                  "/var/work/logs/fastlog/bill", // 特殊重要类日志输出路径 
+    StatLogDir:                  "/var/work/logs/fastlog/stat", // 统计类日志输出路径
+    },
+    AlertLevel: "WARN", // 告警级别
 })
 if err != nil {
-t.Fatal(err)
+    t.Fatal(err)
 }
 ```
 ## ⚙️ 参数说明
@@ -218,7 +217,7 @@ t.Fatal(err)
 #### 批量写入 100 万条 Info 级别日志，适合性能测试或压测。
 ```go
 for i := 0; i < 1_000_000; i++ {
-fastlog.Infof("hello infof! my name is:fastlog %v", i)
+    fastlog.Infof("hello infof! my name is:fastlog %v", i)
 }
 ```
 
@@ -314,8 +313,8 @@ fastlog.WriteBySkipCall(logger.LevelInfo, 2, "custom log with correct caller inf
 import "github.com/995933447/fastlog"
 
 func main() {
-	// 初始化默认统计器
-	fastlog.InitDefaultMsgStat("myService")
+    // 初始化默认统计器
+    fastlog.InitDefaultMsgStat("myService")
 }
 ```
 #### 初始化时会创建一个文件日志器，日志文件名为：{StatLogDir}/msgStat.{srvName}.log
