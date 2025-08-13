@@ -314,8 +314,8 @@ fastlog.WriteBySkipCall(logger.LevelInfo, 2, "custom log with correct caller inf
 import "github.com/995933447/fastlog"
 
 func main() {
-// 初始化默认统计器
-fastlog.InitDefaultMsgStat("myService")
+	// 初始化默认统计器
+	fastlog.InitDefaultMsgStat("myService")
 }
 ```
 #### 初始化时会创建一个文件日志器，日志文件名为：{StatLogDir}/msgStat.{srvName}.log
