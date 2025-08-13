@@ -188,18 +188,18 @@ if err != nil {
 ```
 ## ⚙️ 参数说明
 
-| 参数 | 类型 | 说明                                         |
-|------|------|--------------------------------------------|
-| `MaxFileSizeBytes` | `int` | 单个日志文件最大字节数，超过后自动切分                        |
-| `LogInfoBeforeFileSizeBytes` | `int` | 日志文件达到多大前输出Info 级别日志（-1 表示不限制）             |
-| `LogDebugBeforeFileSizeBytes` | `int` | 日志文件达到多大前输出Info 级别日志（-1 表示不限制）             |
-| `DebugMsgMaxLen` | `int` | Debug 日志最大消息长度（超过会截断）,0表示不限制               |
-| `InfoMsgMaxLen` | `int` | Info 日志最大消息长度（超过会截断）,0表示不限制                |
-| `MaxRemainFileNum` | `int` | 最多保留的日志文件个数                                |
+| 参数 | 类型 | 说明                                          |
+|------|------|---------------------------------------------|
+| `MaxFileSizeBytes` | `int` | 单个日志文件最大字节数，超过后自动切分                         |
+| `LogInfoBeforeFileSizeBytes` | `int` | 日志文件达到多大前输出debug 级别日志（-1 表示不限制） |
+| `LogDebugBeforeFileSizeBytes` | `int` | 日志文件达到多大前输出Info 级别日志（-1 表示不限制）              |
+| `DebugMsgMaxLen` | `int` | Debug 日志最大消息长度（超过会截断）,0表示不限制                |
+| `InfoMsgMaxLen` | `int` | Info 日志最大消息长度（超过会截断）,0表示不限制                 |
+| `MaxRemainFileNum` | `int` | 最多保留的日志文件个数                                 |
 | `Level` | `string` | 最低输出日志级别（DBG/INFO/IMP/WARN/ERR/PANIC/FATAL） |
-| `DefaultLogDir` | `string` | 普通日志保存目录                                   |
-| `BillLogDir` | `string` | 特殊重要类日志输出路径                                |
-| `StatLogDir` | `string` | 统计日志保存目录                                   |
+| `DefaultLogDir` | `string` | 普通日志保存目录                                    |
+| `BillLogDir` | `string` | 特殊重要类日志输出路径                                 |
+| `StatLogDir` | `string` | 统计日志保存目录                                    |
 
 
 ### 3. 初始化默认日志器并设置告警回调
