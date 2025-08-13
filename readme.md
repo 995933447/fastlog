@@ -317,8 +317,8 @@ fastlog.WriteBySkipCall(logger.LevelInfo, 2, "custom log with correct caller inf
 
 ```go
 // 示例
-fastlog.OnBill(func(bill string) {
-    fmt.Println("账单日志写入:", bill)
+fastlog.OnBill(func(billName string) {
+    fmt.Println("账单日志写入:", billName)
 })
 
 fastlog.Bill("order_2025", "订单 %d 支付成功", 12345)
