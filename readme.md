@@ -73,14 +73,16 @@ func TestInitDefaultLogger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	
 	err = fastlog.InitDefaultLogger(func(msg *logger.Msg) {
 		// TODO 发送告警
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
+	
 	for i := 0; i < 1000000; i++ {
-		fastlog.Infof("hello infof! my name is:fastlog %v", i)
+		fastlog.Bill("biz_bill", "hello infof! my name is:fastlog %v", i)
 	}
 
 	fastlog.Debug("hello debug! my name is fastlog")
@@ -289,6 +291,37 @@ fastlog.Infof("server started at port %d", 8080)
 fastlog.PrintError("failed to connect:", err)
 
 fastlog.WriteBySkipCall(logger.LevelInfo, 2, "custom log with correct caller info")
+```
+
+### 5. 账单日志 API
+
+`fastlog` 内置了**账单日志专用通道**，支持为不同账单类型独立记录日志文件，并支持回调事件。
+
+| 方法 | 说明 |
+|------|------|
+| `OnBill(fn func(billName string))` | 注册账单日志触发回调，当有账单日志写入时调用 |
+| `Bill(billName string, format string, args ...interface{})` | 输出账单日志（Important 级别，格式化方式） |
+| `PrintBill(billName string, args ...interface{})` | 输出账单日志（Important 级别，直接拼接参数） |
+| `BillBySkipCall(skipCall int, billName string, format string, args ...interface{})` | 在指定调用栈深度处输出账单日志（格式化方式） |
+| `PrintBillBySkipCall(skipCall int, billName string, args ...interface{})` | 在指定调用栈深度处输出账单日志（直接拼接参数） |
+
+---
+
+### 6. 账单日志实现原理
+
+账单日志通过 `BillLoggerFactory` 按账单名称维护独立的 `logger.Logger` 实例：
+
+- **多账单隔离**：不同 `billName` 对应不同的日志文件。
+- **自动创建**：首次调用时会按配置文件中的 `BillLogDir` 自动创建对应日志文件。
+- **回调机制**：`OnBill` 注册的回调会在每次账单日志写入后触发，可用于业务侧通知或统计。
+
+```go
+// 示例
+fastlog.OnBill(func(bill string) {
+    fmt.Println("账单日志写入:", bill)
+})
+
+fastlog.Bill("order_2025", "订单 %d 支付成功", 12345)
 ```
 
 # 📊 MsgStat 内置消息统计日志工具
