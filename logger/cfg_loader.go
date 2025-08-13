@@ -14,11 +14,6 @@ type LogConf struct {
 	AlertLevel string
 }
 
-type GameFrameLogConf struct {
-	TraceAllUid   bool
-	TraceAllTable bool
-}
-
 type FileLogConf struct {
 	FilePrefix                  string
 	MaxFileSizeBytes            int64  // 文件最大容量,字节为单位
