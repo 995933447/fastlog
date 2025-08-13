@@ -2,7 +2,7 @@
 > **异步写入 / 百万 QPS / 低 CPU 开销 / 精准文件行号 / 内置trace链路追踪**  
 > **基准压测优于任意同类日志框架**
 
-一款为极致吞吐与可观测性而生的日志框架：在高并发环境下保持**百万级 QPS** 的稳定写入，**CPU 占用极低**，同时保留**完整的调用位置信息（文件/行号/函数）**与结构化字段，适合对性能极其敏感的场景。
+一款为极致吞吐与可观测性而生的日志框架：在高并发环境下保持 **百万级 QPS** 的稳定写入，**CPU 占用极低**，同时保留 **完整的调用位置信息（文件/行号/函数）** 与结构化字段，适合对性能极其敏感的场景。
 
 ---
 
@@ -105,7 +105,7 @@ func TestInitDefaultLogger(t *testing.T) {
 	fastlog.Fatalf("hello fatalf! my name is:%s", "fastlog")
 	fastlog.PrintFatal("hello PrintFatal", "my name is fastlog")
 
-	fastlog.OnExit()
+	OnExit()
 }
 ````
 ## 输出内容
@@ -127,7 +127,7 @@ PASS
 ````
 
 ## 🧠 为什么更快
-- 锁分离 + 无伪共享：降低竞争。
+- 无锁 + 无伪共享：降低竞争。
 
 - 批量 I/O：减少 syscall & fsync。
 
