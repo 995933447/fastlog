@@ -157,10 +157,10 @@ PASS
 ### 1. 导入依赖
 ```go
 import (
-    "testing"
+"testing"
 
-    "github.com/995933447/fastlog"
-    "github.com/995933447/logger"
+"github.com/995933447/fastlog"
+"github.com/995933447/logger"
 )
 ```
 
@@ -169,22 +169,22 @@ import (
 
 ```go
 err := fastlog.InitDefaultCfgLoader("./test/log.toml", &logger.LogConf{
-    File: logger.FileLogConf{
-        MaxFileSizeBytes:            10000000000,    // 单个日志文件最大字节数（10G）
-        LogInfoBeforeFileSizeBytes:  -1,            // 日志文件达到多大前输出Info 级别日志（-1 表示不限制）
-        LogDebugBeforeFileSizeBytes: -1,            // 日志文件达到多大前输出Info 级别日志（-1 表示不限制）
-        DebugMsgMaxLen:              1024,          // Debug 日志最大消息长度（超过会截断）,0表示不限制
-        InfoMsgMaxLen:               1024,          // Info 日志最大消息长度（超过会截断）,0表示不限制
-        MaxRemainFileNum:            2,             // 最多保留的日志文件个数
-        Level:                       "DBG",         // 日志级别（DBG/INFO/IMP/WARN/ERR/PANIC/FATAL）
-        DefaultLogDir:               "/var/work/logs/fastlog/log",  // 普通日志输出路径
-        BillLogDir:                  "/var/work/logs/fastlog/bill", // 特殊重要类日志输出路径 
-        StatLogDir:                  "/var/work/logs/fastlog/stat", // 统计类日志输出路径
-    },
-    AlertLevel: "WARN", // 告警级别
+File: logger.FileLogConf{
+MaxFileSizeBytes:            10000000000,    // 单个日志文件最大字节数（10G）
+LogInfoBeforeFileSizeBytes:  -1,            // 日志文件达到多大前输出Info 级别日志（-1 表示不限制）
+LogDebugBeforeFileSizeBytes: -1,            // 日志文件达到多大前输出Info 级别日志（-1 表示不限制）
+DebugMsgMaxLen:              1024,          // Debug 日志最大消息长度（超过会截断）,0表示不限制
+InfoMsgMaxLen:               1024,          // Info 日志最大消息长度（超过会截断）,0表示不限制
+MaxRemainFileNum:            2,             // 最多保留的日志文件个数
+Level:                       "DBG",         // 日志级别（DBG/INFO/IMP/WARN/ERR/PANIC/FATAL）
+DefaultLogDir:               "/var/work/logs/fastlog/log",  // 普通日志输出路径
+BillLogDir:                  "/var/work/logs/fastlog/bill", // 特殊重要类日志输出路径 
+StatLogDir:                  "/var/work/logs/fastlog/stat", // 统计类日志输出路径
+},
+AlertLevel: "WARN", // 告警级别
 })
 if err != nil {
-    t.Fatal(err)
+t.Fatal(err)
 }
 ```
 ## ⚙️ 参数说明
@@ -207,10 +207,10 @@ if err != nil {
 #### 可以注册一个回调函数，当满足告警条件时执行（例如发送到监控平台）。
 ```go
 err = fastlog.InitDefaultLogger(func(msg *logger.Msg) {
-    // TODO: 在这里实现告警逻辑，例如发送到告警群。注意这个方法是同步调用的，最好非阻塞逻辑实现
+// TODO: 在这里实现告警逻辑，例如发送到告警群。注意这个方法是同步调用的，最好非阻塞逻辑实现
 })
 if err != nil {
-    t.Fatal(err)
+t.Fatal(err)
 }
 ```
 
@@ -218,7 +218,7 @@ if err != nil {
 #### 批量写入 100 万条 Info 级别日志，适合性能测试或压测。
 ```go
 for i := 0; i < 1_000_000; i++ {
-    fastlog.Infof("hello infof! my name is:fastlog %v", i)
+fastlog.Infof("hello infof! my name is:fastlog %v", i)
 }
 ```
 
@@ -302,7 +302,7 @@ fastlog.WriteBySkipCall(logger.LevelInfo, 2, "custom log with correct caller inf
 
 - **自动周期输出**：每隔 `Interval`（默认 1 分钟）输出统计结果到文件。
 - **多维度统计**：记录消息总数、成功、失败、超时次数及耗时信息。
-- **灵活扩展**：支持自定义统计输出回调（`additionMsgReportFunc`）,如上报promethus。
+- **灵活扩展**：支持自定义统计输出回调（`additionMsgStatReportFunc`）,如上报prometheus。
 - **异步写入**：基于通道缓存，避免阻塞业务流程。
 - **支持文件日志**：按服务名生成独立统计日志文件。
 
@@ -311,18 +311,18 @@ fastlog.WriteBySkipCall(logger.LevelInfo, 2, "custom log with correct caller inf
 ## 📦 初始化
 
 ```go
-import "github.com/995933447/fastlog/stat"
+import "github.com/995933447/fastlog"
 
 func main() {
-    // 初始化默认统计器
-    stat.InitDefaultMsgStat("myService")
+// 初始化默认统计器
+fastlog.InitDefaultMsgStat("myService")
 }
 ```
 #### 初始化时会创建一个文件日志器，日志文件名为：{StatLogDir}/msgStat.{srvName}.log
 
 ## 📝 核心数据结构
 
-### `ReportData`
+### `ReportStatData`
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | `key` | `string` | 消息标识（如 msgid / rpcname） |
@@ -368,20 +368,20 @@ func main() {
 
 ### 使用例子
 ```
-stat.InitDefaultMsgStat("myService")
+fastlog.InitDefaultMsgStat("myService")
 
 // 处理成功
-stat.ReportStat("LoginRPC", 0, 15*time.Millisecond)
+fastlog.ReportStat("LoginRPC", 0, 15*time.Millisecond)
 
 // 处理失败
-stat.ReportStat("LoginRPC", 1, 30*time.Millisecond)
+fastlog.ReportStat("LoginRPC", 1, 30*time.Millisecond)
 
 // 记录总数
-stat.ReportTotalStat("ActiveConnections", 150)
+fastlog.ReportTotalStat("ActiveConnections", 150)
 ```
 ### 日志文件内容示例：
 ```
-=========MsgStat begin=========
-LoginRPC: Success = 95, Fail = 3, Timeout = 2, Total = 100, MaxTime = 80ms, AvgTime = 20ms, TotalTime = 2s, MaxSuccTime = 60ms, AvgSuccTime = 18ms
-SendMessage: Success = 2000, Fail = 15, Timeout = 5, Total = 2020, MaxTime = 120ms, AvgTime = 22ms, TotalTime = 44.4s, MaxSuccTime = 100ms, AvgSuccTime = 20ms
-=========MsgStat end=========
+[2025-08-13 14:44:02.0161] [fastlog] [NoTrace][48] IMP github.com/995933447/fastlog.(*MsgStat).RunStat:stat.go:123 =========MsgStat begin=========
+[2025-08-13 14:44:02.0161] [fastlog] [NoTrace][48] IMP github.com/995933447/fastlog.(*MsgStat).RunStat:stat.go:123 LoginRPC: Success = 1, Fail = 1, Timeout = 0, Total = 2, MaxTime = 30ms, AvgTime = 22.5ms, TotalTime = 45ms, MaxSuccTime = 15ms, AvgSuccTime = 7.5ms
+[2025-08-13 14:44:02.0161] [fastlog] [NoTrace][48] IMP github.com/995933447/fastlog.(*MsgStat).RunStat:stat.go:123 ActiveConnections: Success = 150, Fail = 0, Timeout = 0, Total = 150, MaxTime = 0s, AvgTime = 0s, TotalTime = 0s, MaxSuccTime = 0s, AvgSuccTime = 0s
+[2025-08-13 14:44:02.0161] [fastlog] [NoTrace][48] IMP github.com/995933447/fastlog.(*MsgStat).RunStat:stat.go:123 =========MsgStat end=========
