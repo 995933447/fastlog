@@ -107,7 +107,7 @@ func TestInitDefaultLogger(t *testing.T) {
 	fastlog.Fatalf("hello fatalf! my name is:%s", "fastlog")
 	fastlog.PrintFatal("hello PrintFatal", "my name is fastlog")
 
-	OnExit()
+	fastlog.OnExit()
 }
 ````
 ## 输出内容
@@ -208,10 +208,10 @@ if err != nil {
 #### 可以注册一个回调函数，当满足告警条件时执行（例如发送到监控平台）。
 ```go
 err = fastlog.InitDefaultLogger(func(msg *logger.Msg) {
-// TODO: 在这里实现告警逻辑，例如发送到告警群。注意这个方法是同步调用的，最好非阻塞逻辑实现
+    // TODO: 在这里实现告警逻辑，例如发送到告警群。注意这个方法是同步调用的，最好非阻塞逻辑实现
 })
 if err != nil {
-t.Fatal(err)
+    t.Fatal(err)
 }
 ```
 
