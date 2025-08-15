@@ -157,6 +157,8 @@ func OnExit() {
 			fmt.Println("flush bill logger:", billName, "err:", err)
 		}
 	}
+
+	FlushStat()
 }
 
 func SetLogConfig(cfg *logger.LogConf) {
