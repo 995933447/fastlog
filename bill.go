@@ -42,7 +42,7 @@ func (b *BillLoggerFactory) MustLogger(billName string) *logger.Logger {
 
 	cfgLoader := MustDefaultCfgLoader()
 	cfg := cfgLoader.GetConf()
-	billLogger, err := InitFileLogger(SrvName+"-bill", cfg.File.BillLogDir, billName, 5, cfgLoader)
+	billLogger, err := InitFileLogger(cfg.File.BillLogDir, billName, 5, cfgLoader)
 	if err != nil {
 		panic(err)
 	}
