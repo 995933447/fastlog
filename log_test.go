@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/995933447/fastlog/logger"
+	"github.com/995933447/fastlog/logger/writer"
 )
 
 func BenchmarkLog(b *testing.B) {
@@ -80,5 +81,12 @@ func TestInitDefaultLogger(t *testing.T) {
 	Fatalf("hello fatalf! my name is:%s", "fastlog")
 	PrintFatal("hello PrintFatal", "my name is fastlog")
 
+	OnExit()
+}
+
+func TestStdoutWriter(t *testing.T) {
+	defaultLogger = logger.NewLogger(writer.NewStdoutWriter(logger.LevelDebug, "fastlog", 4))
+	Debugf("debug fast log, i:%d", 1)
+	defaultLogger.Debugf("debug fast log, i:%d", 2)
 	OnExit()
 }
