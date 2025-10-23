@@ -11,7 +11,7 @@ type Formatter interface {
 	SetSkipCall(skipCall int)
 	Copy() Formatter
 	GetSkipCall() int
-	Sprintf(level Level, stdoutColor Color, args ...interface{}) ([]byte, error)
+	Sprintf(level Level, args ...interface{}) ([]byte, error)
 }
 
 type Msg struct {
