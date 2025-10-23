@@ -20,16 +20,6 @@ const (
 	CompressedFileSuffix = ".zip"
 )
 
-var levelToStdoutColorMap = map[logger.Level]logger.Color{
-	logger.LevelDebug:     logger.ColorLightGreen,
-	logger.LevelInfo:      logger.ColorLightGreen,
-	logger.LevelImportant: logger.ColorBlue,
-	logger.LevelWarn:      logger.ColorGreen,
-	logger.LevelError:     logger.ColorRed,
-	logger.LevelPanic:     logger.ColorRed,
-	logger.LevelFatal:     logger.ColorPurple,
-}
-
 type CheckTimeToOpenNewFileFunc func(writer *FileWriter, lastOpenFileTime *time.Time, isNeverOpenFile bool) (string, bool)
 
 var OpenNewFileByByDateHour CheckTimeToOpenNewFileFunc = func(writer *FileWriter, lastOpenFileTime *time.Time, isNeverOpenFile bool) (string, bool) {
@@ -98,8 +88,20 @@ func NewFileWriter(cfg *FileWriterConf) (*FileWriter, error) {
 		return nil, err
 	}
 	return &FileWriter{
-		cfg:             cfg,
-		fmt:             fmts.NewTraceFormatter(cfg.ModuleName, cfg.SkipCall, fmts.FormatText, false, false, cfg.LogCfgLoader),
+		cfg: cfg,
+		fmt: fmts.NewTraceFormatter(
+			cfg.ModuleName,
+			cfg.SkipCall,
+			fmts.FormatText,
+			false,
+			false,
+			func() int32 {
+				return cfg.LogCfgLoader.GetConf().File.DebugMsgMaxLen
+			},
+			func() int32 {
+				return cfg.LogCfgLoader.GetConf().File.InfoMsgMaxLen
+			},
+		),
 		bufCh:           make(chan []byte, cfg.BufChanLen),
 		flushSignCh:     make(chan struct{}),
 		flushDoneSignCh: make(chan error),
@@ -283,18 +285,13 @@ func (w *FileWriter) WriteBySkipCall(level logger.Level, skipCall int, args ...i
 		return nil
 	}
 
-	stdoutColor, ok := levelToStdoutColorMap[level]
-	if !ok {
-		stdoutColor = logger.ColorNil
-	}
-
 	fm := w.fmt
 	if w.fmt.GetSkipCall() != skipCall {
 		fm = w.fmt.Copy()
 		fm.SetSkipCall(skipCall)
 	}
 
-	logContent, err := fm.Sprintf(level, stdoutColor, args...)
+	logContent, err := fm.Sprintf(level, args...)
 	if err != nil {
 		return err
 	}
@@ -313,12 +310,7 @@ func (w *FileWriter) Write(level logger.Level, args ...interface{}) error {
 		return nil
 	}
 
-	stdoutColor, ok := levelToStdoutColorMap[level]
-	if !ok {
-		stdoutColor = logger.ColorNil
-	}
-
-	logContent, err := w.fmt.Sprintf(level, stdoutColor, args...)
+	logContent, err := w.fmt.Sprintf(level, args...)
 	if err != nil {
 		return err
 	}
@@ -343,12 +335,7 @@ func (w *FileWriter) WriteMsg(msg *logger.Msg) error {
 }
 
 func (w *FileWriter) GetMsg(level logger.Level, args ...interface{}) (*logger.Msg, error) {
-	stdoutColor, ok := levelToStdoutColorMap[level]
-	if !ok {
-		stdoutColor = logger.ColorNil
-	}
-
-	formatted, err := w.fmt.Sprintf(level, stdoutColor, args...)
+	formatted, err := w.fmt.Sprintf(level, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -361,18 +348,13 @@ func (w *FileWriter) GetMsg(level logger.Level, args ...interface{}) (*logger.Ms
 }
 
 func (w *FileWriter) GetMsgBySkipCall(level logger.Level, skipCall int, args ...interface{}) (*logger.Msg, error) {
-	stdoutColor, ok := levelToStdoutColorMap[level]
-	if !ok {
-		stdoutColor = logger.ColorNil
-	}
-
 	fm := w.fmt
 	if w.fmt.GetSkipCall() != skipCall {
 		fm = w.fmt.Copy()
 		fm.SetSkipCall(skipCall)
 	}
 
-	formatted, err := fm.Sprintf(level, stdoutColor, args...)
+	formatted, err := fm.Sprintf(level, args...)
 	if err != nil {
 		return nil, err
 	}
