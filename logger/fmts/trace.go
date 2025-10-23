@@ -29,24 +29,26 @@ var replacer = strings.NewReplacer(
 	"\t", `\t`,
 )
 
-func NewTraceFormatter(moduleName string, skipCall int, formatType Format, disabledStdoutColor, disabledCacheCaller bool, cfgLoader *logger.ConfLoader) *TraceFormatter {
+func NewTraceFormatter(moduleName string, skipCall int, formatType Format, disabledStdoutColor, disabledCacheCaller bool, getDebugMsgMaxLenFunc, getInfoMsgMaxLenFunc func() int32) *TraceFormatter {
 	return &TraceFormatter{
-		skipCall:            skipCall,
-		formatType:          formatType,
-		moduleName:          moduleName,
-		cfgLoader:           cfgLoader,
-		disabledStdoutColor: disabledStdoutColor,
-		disabledCacheCaller: disabledCacheCaller,
+		skipCall:              skipCall,
+		formatType:            formatType,
+		moduleName:            moduleName,
+		getDebugMsgMaxLenFunc: getDebugMsgMaxLenFunc,
+		getInfoMsgMaxLenFunc:  getInfoMsgMaxLenFunc,
+		disabledStdoutColor:   disabledStdoutColor,
+		disabledCacheCaller:   disabledCacheCaller,
 	}
 }
 
 type TraceFormatter struct {
-	skipCall            int
-	formatType          Format
-	moduleName          string
-	cfgLoader           *logger.ConfLoader
-	disabledStdoutColor bool
-	disabledCacheCaller bool
+	skipCall              int
+	formatType            Format
+	moduleName            string
+	getDebugMsgMaxLenFunc func() int32
+	getInfoMsgMaxLenFunc  func() int32
+	disabledStdoutColor   bool
+	disabledCacheCaller   bool
 }
 
 func (f *TraceFormatter) DisableCacheCaller(disabled bool) {
@@ -62,13 +64,18 @@ func (f *TraceFormatter) SetSkipCall(skipCall int) {
 }
 
 func (f *TraceFormatter) Copy() logger.Formatter {
-	return NewTraceFormatter(f.moduleName, f.skipCall, f.formatType, f.disabledStdoutColor, f.disabledCacheCaller, f.cfgLoader)
+	return NewTraceFormatter(f.moduleName, f.skipCall, f.formatType, f.disabledStdoutColor, f.disabledCacheCaller, f.getDebugMsgMaxLenFunc, f.getInfoMsgMaxLenFunc)
 }
 
-func (f *TraceFormatter) Sprintf(level logger.Level, stdoutColor logger.Color, args ...interface{}) ([]byte, error) {
+func (f *TraceFormatter) Sprintf(level logger.Level, args ...interface{}) ([]byte, error) {
 	levelStr, err := logger.TransferLevelToStr(level)
 	if err != nil {
 		return nil, err
+	}
+
+	stdoutColor, ok := levelToStdoutColorMap[level]
+	if !ok {
+		stdoutColor = logger.ColorNil
 	}
 
 	var colorStdoutStart, colorStdoutEnd string
@@ -147,15 +154,16 @@ func (f *TraceFormatter) Sprintf(level logger.Level, stdoutColor logger.Color, a
 
 	switch level {
 	case logger.LevelDebug:
-		debugMsgMaxLen := f.cfgLoader.GetConf().File.DebugMsgMaxLen
+		debugMsgMaxLen := f.getDebugMsgMaxLenFunc()
 		if debugMsgMaxLen > 0 {
 			rawFormatted = f.truncateByRunes(rawFormatted, debugMsgMaxLen)
 		}
 	case logger.LevelInfo:
-		infoMsgMaxLen := f.cfgLoader.GetConf().File.InfoMsgMaxLen
+		infoMsgMaxLen := f.getInfoMsgMaxLenFunc()
 		if infoMsgMaxLen > 0 {
 			rawFormatted = f.truncateByRunes(rawFormatted, infoMsgMaxLen)
 		}
+	default:
 	}
 
 	callLineStr := strconv.Itoa(callLine)
