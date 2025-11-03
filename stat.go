@@ -140,6 +140,12 @@ func (m *MsgStat) RunStat() {
 	}
 }
 
+const (
+	StatResultSuccess = 0
+	StatResultFail    = 1
+	StatResultTimeout = 2
+)
+
 func (m *MsgStat) AddStat(data *ReportStatData) {
 	// 获取统计结点，不存在则插入
 	key := data.key
@@ -151,11 +157,11 @@ func (m *MsgStat) AddStat(data *ReportStatData) {
 	// 统计成功/失败/超时
 	pStatData.TotalMsgNum++
 	switch data.result {
-	case 0:
+	case StatResultSuccess:
 		pStatData.SuccessMsgNum++
-	case 1, -1:
+	case StatResultFail:
 		pStatData.FailMsgNum++
-	case 2, -2:
+	case StatResultTimeout:
 		pStatData.TimeoutMsgNum++
 	default:
 	}
