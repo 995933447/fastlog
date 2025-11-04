@@ -316,7 +316,7 @@ func (w *FileWriter) Write(level logger.Level, args ...interface{}) error {
 	}
 
 	if w.enabledStdoutPrinter.Load() {
-		fmt.Print(logContent)
+		fmt.Print(string(logContent))
 	}
 
 	w.asyncWrite(logContent)
