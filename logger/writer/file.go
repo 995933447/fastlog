@@ -181,29 +181,29 @@ func (w *FileWriter) checkFileIsFull() (bool, error) {
 	}
 
 	cfg := w.cfg.LogCfgLoader.GetConf()
-	if cfg.File.MaxFileSizeBytes > 0 {
-		fileName := w.fp.Name()
-		fileInfo, err := os.Stat(w.fp.Name())
-		if err != nil {
-			if !os.IsNotExist(err) {
-				return false, err
-			}
-
-			// 文件被删除了
-			if w.fp, err = os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0755); err != nil {
-				return false, err
-			}
-
-			fileInfo, err = w.fp.Stat()
-			if err != nil {
-				return false, err
-			}
+	fileName := w.fp.Name()
+	fileInfo, err := os.Stat(w.fp.Name())
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return false, err
 		}
 
-		w.curSizeBytes = fileInfo.Size()
-		w.isFileFull = w.curSizeBytes >= cfg.File.MaxFileSizeBytes
-		w.lastCheckIsFullAt = time.Now().Unix()
+		// 文件被删除了
+		if w.fp, err = os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0755); err != nil {
+			return false, err
+		}
+
+		fileInfo, err = w.fp.Stat()
+		if err != nil {
+			return false, err
+		}
 	}
+
+	w.curSizeBytes = fileInfo.Size()
+	if cfg.File.MaxFileSizeBytes > 0 {
+		w.isFileFull = w.curSizeBytes >= cfg.File.MaxFileSizeBytes
+	}
+	w.lastCheckIsFullAt = time.Now().Unix()
 
 	return w.isFileFull, nil
 }
